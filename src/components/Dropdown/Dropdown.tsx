@@ -202,7 +202,7 @@ function Dropdown<T extends boolean = false>({
           ))}
           {multiSelect && (
             <div
-              className="px-3 py-1 text-gray-700 select-none cursor-pointer hover:bg-gray-100 flex items-center"
+              className="px-3 py-1 text-gray-700 text-[0.875rem] select-none cursor-pointer hover:bg-gray-100 flex items-center"
               onClick={(e) => {
                 e.stopPropagation();
                 if (Array.isArray(value) && value.length === options.length) {
