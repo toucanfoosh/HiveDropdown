@@ -126,7 +126,11 @@ function Dropdown<T extends boolean = false>({
         </div>
         <div
           className={`cursor-pointer bg-white rounded text-[0.875rem] ${
-            !open ? "border-gray-300" : "border-(--accent)"
+            !open
+              ? required && !preview
+                ? "border-red-500"
+                : "border-gray-300"
+              : "border-(--accent)"
           } border-[1px] overflow-hidden flex justify-between items-center p-3`}
           style={{ height, width }}
           onClick={() => setOpen(!open)}
