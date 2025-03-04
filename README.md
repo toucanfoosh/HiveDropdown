@@ -10,7 +10,7 @@
   - run `npm run dev`
 - Or:
   - run `npm run build`
-  - run `npm start`
+  - run `npm run start`
 
 ### This should open the demo page I have prepared, here is how the component works and what is shown on the page:
 
