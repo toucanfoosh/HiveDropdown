@@ -52,5 +52,3 @@ Clicking on the menu will open it, then:
   - Since you can select multiple things, the menu will not close on option selection
 
 ---
-
-\*Focusing on a menu also highlights in the same blue as the hive site (;
