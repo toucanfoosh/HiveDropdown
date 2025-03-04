@@ -53,4 +53,4 @@ Clicking on the menu will open it, then:
 
 ---
 
-\*Focusing on a menu also highlights in the same blue as the hive logo (;
+\*Focusing on a menu also highlights in the same blue as the hive site (;
