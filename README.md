@@ -16,22 +16,29 @@
 
 The component takes in the following parameters:
 
+### Required:
+
 - **title**
   - The title of the dropdown menu
-- **height** (optional, defaults to "3rem")
-  - The height of the dropdown menu
-- **width** (optional, defaults to "15rem")
-  - The width of the dropdown menu
 - **options**
   - An array of strings that represent the options in the dropdown menu
-- **required** (optional, defaults to false)
-  - A boolean that determines if the dropdown menu is required
-- **multiSelect** (optional, defaults to false)
-  - A boolean that determines if the dropdown menu allows multiple selections
 - **value**
   - An array of strings that represent the selected options in the dropdown menu
 - **onChange**
   - A function that is called when the selected options in the dropdown menu change
+
+### Optional:
+
+- **height** (optional, defaults to "3rem")
+  - The height of the dropdown menu
+- **width** (optional, defaults to "15rem")
+  - The width of the dropdown menu
+- **required** (optional, defaults to false)
+  - A boolean that determines if the dropdown menu is required
+- **multiSelect** (optional, defaults to false)
+  - A boolean that determines if the dropdown menu allows multiple selections
+
+---
 
 This is a controlled component and the parent component must pass in the value and onChange function as props.
 
