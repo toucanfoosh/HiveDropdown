@@ -167,7 +167,7 @@ function Dropdown<T extends boolean = false>({
           {options.map((option, index) => (
             <div
               key={index}
-              className={`px-3 py-1 text-gray-700 select-none cursor-pointer flex justify-between items-center 
+              className={`px-3 py-1 text-gray-700 text-[0.875rem] select-none cursor-pointer flex justify-between items-center 
                 ${
                   Array.isArray(value)
                     ? value.includes(option)
