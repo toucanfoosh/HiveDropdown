@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
 import {
   FaAngleDown,
@@ -8,117 +9,94 @@ import {
   FaMinus,
 } from "react-icons/fa6";
 
-interface DropdownProps {
+// Data type for the value of the dropdown depending on whether it is multi-select or not
+export type DropdownValue<T extends boolean> = T extends true
+  ? string[] | null
+  : string | null;
+
+export interface DropdownProps<T extends boolean> {
   title: string;
   height?: string;
   width?: string;
   options: string[];
   required?: boolean;
-  multiSelect?: boolean;
-  value?: number | number[];
-  onChange?: (selected: number | number[] | null) => void;
+  multiSelect?: T;
+  value: DropdownValue<T>;
+  onChange: (selected: DropdownValue<T>) => void;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
+function Dropdown<T extends boolean = false>({
   title,
-  height = "2rem",
+  height = "3rem",
   width = "15rem",
   options,
   required = false,
-  multiSelect = false,
+  multiSelect = false as T,
   value,
   onChange,
-}) => {
-  const [internalValue, setInternalValue] = useState<number | number[] | null>(
-    value !== undefined ? value : multiSelect ? [] : null
-  );
+}: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Checks if this should be a controlled or uncontrolled component
-  const selected = value !== undefined ? value : internalValue;
+  const preview =
+    value === null ? null : Array.isArray(value) ? value.join(", ") : value;
 
-  const updateValue = (newValue: number | number[] | null) => {
-    if (onChange) {
-      onChange(newValue);
-    } else {
-      setInternalValue(newValue);
-    }
-    setPreview(
-      newValue === null
-        ? null
-        : Array.isArray(newValue)
-        ? newValue.map((index) => options[index]).join(", ")
-        : options[newValue]
-    );
-  };
-
-  const handleSelect = (optionIndex: number) => {
-    let newValue;
+  const handleSelect = (option: string) => {
+    let newValue: DropdownValue<T>;
     if (multiSelect) {
-      if (Array.isArray(selected)) {
-        if (selected.includes(optionIndex)) {
-          newValue = removeInOrder(selected, optionIndex);
+      if (Array.isArray(value)) {
+        if (value.includes(option)) {
+          newValue = removeInOrder(value, option) as DropdownValue<T>;
         } else {
-          newValue = insertInOrder(selected, optionIndex);
+          newValue = insertInOrder(value, option) as DropdownValue<T>;
         }
       } else {
-        newValue = [optionIndex];
+        newValue = [option] as unknown as DropdownValue<T>;
       }
     } else {
-      newValue = selected === optionIndex ? null : optionIndex;
+      newValue =
+        value === option
+          ? (null as DropdownValue<T>)
+          : (option as DropdownValue<T>);
     }
-    updateValue(newValue);
+    onChange(newValue);
     if (!multiSelect) {
       setOpen(false);
     }
   };
 
-  function insertInOrder(arr: number[], num: number): number[] {
-    let left = 0,
-      right = arr.length;
-
-    while (left < right) {
-      const mid = Math.floor((left + right) / 2);
-      if (arr[mid] < num) {
-        left = mid + 1;
-      } else {
-        right = mid;
+  function insertInOrder(arr: string[], option: string): string[] {
+    const optionIndex = options.indexOf(option);
+    const newArr = [...arr];
+    let inserted = false;
+    for (let i = 0; i < newArr.length; i++) {
+      if (options.indexOf(newArr[i]) > optionIndex) {
+        newArr.splice(i, 0, option);
+        inserted = true;
+        break;
       }
     }
-
-    // Create a new array to avoid mutating state directly.
-    const newArr = [...arr];
-    newArr.splice(left, 0, num);
+    if (!inserted) {
+      newArr.push(option);
+    }
     return newArr;
   }
 
-  function removeInOrder(arr: number[], num: number): number[] {
-    let left = 0,
-      right = arr.length;
-
-    while (left < right) {
-      const mid = Math.floor((left + right) / 2);
-      if (arr[mid] < num) {
-        left = mid + 1;
-      } else {
-        right = mid;
-      }
-    }
-
-    const newArr = [...arr];
-    newArr.splice(left, 1);
-    return newArr;
+  function removeInOrder(arr: string[], option: string): string[] {
+    return arr.filter((item) => item !== option);
   }
 
-  function clearSelection() {
-    updateValue(multiSelect ? [] : null);
-  }
+  const clearSelection = () => {
+    onChange(
+      multiSelect
+        ? ([] as unknown as DropdownValue<T>)
+        : (null as DropdownValue<T>)
+    );
+  };
 
-  function selectAll() {
-    updateValue(Array.from({ length: options.length }, (_, i) => i));
-  }
+  const selectAll = () => {
+    onChange([...options] as unknown as DropdownValue<T>);
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -140,25 +118,24 @@ const Dropdown: React.FC<DropdownProps> = ({
       <div>
         <div
           className={`${
-            required ? "text-red-500" : "text-(--foreground)"
-          } text-xs pb-1`}
+            required && !preview && "text-red-500"
+          } text-xs pb-1 text-(--foreground)`}
         >
           {title}
           {required && "*"}
         </div>
         <div
-          className={`cursor-pointer bg-white rounded text-[0.875rem] border-gray-300 border-[1px] overflow-hidden flex justify-between items-center p-3`}
+          className={`cursor-pointer bg-white rounded text-[0.875rem] ${
+            !open ? "border-gray-300" : "border-(--accent)"
+          } border-[1px] overflow-hidden flex justify-between items-center p-3`}
           style={{ height, width }}
-          onClick={(e) => {
-            setOpen(!open);
-          }}
+          onClick={() => setOpen(!open)}
         >
           {preview ? (
             <>
-              <div className={`truncate w-4/5 text-gray-700`}>{preview}</div>
-              <div>
+              <div className="truncate w-4/5 text-gray-700">{preview}</div>
+              <div className="text-gray-700">
                 <FaXmark
-                  className={`text-gray-700`}
                   onClick={(e) => {
                     e.stopPropagation();
                     clearSelection();
@@ -171,12 +148,8 @@ const Dropdown: React.FC<DropdownProps> = ({
               <div className="text-gray-500 select-none">
                 Select {multiSelect ? "all" : "one"} {!required && "(Optional)"}
               </div>
-              <div>
-                {open ? (
-                  <FaAngleUp className={`text-gray-700`} />
-                ) : (
-                  <FaAngleDown className={`text-gray-700`} />
-                )}
+              <div className="text-gray-700">
+                {open ? <FaAngleUp /> : <FaAngleDown />}
               </div>
             </>
           )}
@@ -190,57 +163,53 @@ const Dropdown: React.FC<DropdownProps> = ({
           {options.map((option, index) => (
             <div
               key={index}
-              className={`px-3 py-1 text-gray-700 select-none cursor-pointer ${
-                multiSelect ? "flex justify-between items-center" : ""
-              } ${
-                Array.isArray(selected)
-                  ? selected.includes(index)
+              className={`px-3 py-1 text-gray-700 select-none cursor-pointer flex justify-between items-center 
+                ${
+                  Array.isArray(value)
+                    ? value.includes(option)
+                      ? "hover:bg-gray-300 bg-gray-200"
+                      : "hover:bg-gray-200"
+                    : value === option
                     ? "hover:bg-gray-300 bg-gray-200"
-                    : "hover:bg-gray-100"
-                  : selected === index
-                  ? "hover:bg-gray-300 bg-gray-200"
-                  : "hover:bg-gray-100"
-              }`}
+                    : "hover:bg-gray-200"
+                }`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleSelect(index);
-                if (!multiSelect) {
-                  setOpen(false);
-                }
+                handleSelect(option);
+                if (!multiSelect) setOpen(false);
               }}
+              style={{ height }}
             >
-              <>{option}</>
+              <span>{option}</span>
               {multiSelect && (
-                <>
-                  {Array.isArray(selected) ? (
-                    selected.includes(index) ? (
-                      <FaMinus className={`text-gray-700`} />
+                <div className="text-gray-700">
+                  {Array.isArray(value) ? (
+                    value.includes(option) ? (
+                      <FaMinus />
                     ) : (
-                      <FaPlus className={`text-gray-700`} />
+                      <FaPlus />
                     )
                   ) : (
-                    <FaPlus className={`text-gray-700`} />
-                  )}{" "}
-                </>
+                    <FaPlus />
+                  )}
+                </div>
               )}
             </div>
           ))}
           {multiSelect && (
             <div
-              className="px-3 py-1 text-gray-700 select-none cursor-pointer hover:bg-gray-100"
+              className="px-3 py-1 text-gray-700 select-none cursor-pointer hover:bg-gray-100 flex items-center"
               onClick={(e) => {
                 e.stopPropagation();
-                if (
-                  Array.isArray(selected) &&
-                  selected.length === options.length
-                ) {
+                if (Array.isArray(value) && value.length === options.length) {
                   clearSelection();
                 } else {
                   selectAll();
                 }
               }}
+              style={{ height }}
             >
-              {Array.isArray(selected) && selected.length === options.length
+              {Array.isArray(value) && value.length === options.length
                 ? "Deselect all"
                 : "Select all"}
             </div>
@@ -249,6 +218,6 @@ const Dropdown: React.FC<DropdownProps> = ({
       )}
     </div>
   );
-};
+}
 
 export default Dropdown;
