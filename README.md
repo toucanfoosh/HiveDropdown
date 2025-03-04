@@ -50,3 +50,7 @@ Clicking on the menu will open it, then:
   - If an option is clicked, the selection will be recorded then the menu will close
 - For multiselect menus, clicking anything BUT a selection will close the menu
   - Since you can select multiple things, the menu will not close on option selection
+
+---
+
+\*Focusing on a menu also highlights in the same blue as the hive logo (;
