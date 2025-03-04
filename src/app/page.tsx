@@ -15,7 +15,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-20">
+    <div className="flex items-center justify-center min-h-screen p-20 text-[0.875rem]">
       <div className="flex flex-col justify-start w-[50rem]">
         <div className="flex items-end">
           <Dropdown
