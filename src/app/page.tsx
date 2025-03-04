@@ -1,5 +1,5 @@
 "use client";
-import Dropdown from "@/components/Dropdown/Dropdown";
+import Dropdown from "@/components/Dropdown";
 import { useState } from "react";
 
 export default function Home() {

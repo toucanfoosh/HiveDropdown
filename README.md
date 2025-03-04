@@ -1,5 +1,7 @@
 # Daniel Wu's Dropdown Menu Component for Hive
 
+\*For the code, the main component itself is in /src/components/Dropdown/Dropdown.tsx
+
 ## To run:
 
 \*Node.js version "^18.18.0 || ^19.8.0 || >= 20.0.0" is required.
